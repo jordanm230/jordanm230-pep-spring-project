@@ -28,17 +28,15 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public Message deleteMessage(long message_id) {
-        Message message = messageRepository.findById(message_id).get();
+    public void deleteMessage(long message_id) {
+        messageRepository.findById(message_id).get();
         messageRepository.deleteById(message_id);
-        return message;
     }
 
-    public Message updateMessage(long message_id, String new_message) {
+    public void updateMessage(long message_id, String new_message) {
         Message message = messageRepository.findById(message_id).get();
         message.setMessageText(new_message);
         messageRepository.save(message);
-        return message;
     }
 
     public Message getMessage(long message_id) {
