@@ -28,19 +28,19 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    public void deleteMessage(long message_id) {
-        messageRepository.findById(message_id).get();
-        messageRepository.deleteById(message_id);
+    public void deleteMessage(int message_id) {
+        Message message = messageRepository.findByMessageId(message_id);
+        messageRepository.delete(message);
     }
 
-    public void updateMessage(long message_id, String new_message) {
-        Message message = messageRepository.findById(message_id).get();
+    public void updateMessage(int message_id, String new_message) {
+        Message message = messageRepository.findByMessageId(message_id);
         message.setMessageText(new_message);
         messageRepository.save(message);
     }
 
-    public Message getMessage(long message_id) {
-        return messageRepository.findById(message_id).get();
+    public Message getMessage(int message_id) {
+        return messageRepository.findByMessageId(message_id);
     }
 
     public List<Message> getUserMessages(int posted_by) {

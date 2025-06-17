@@ -53,18 +53,20 @@ public class SocialMediaController {
         }
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody Account account) {
         boolean isExistingUser = false;
         Account validAccount = null;
+        String targetPassword = "";
         List<Account> accounts = accountService.getAllAccounts();
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getUsername().equals(account.getUsername())) {
                 isExistingUser = true;
                 validAccount = accounts.get(i);
+                targetPassword = accounts.get(i).getPassword();
             }
         }
-        if (isExistingUser) {
+        if (isExistingUser && account.getPassword().equals(targetPassword)) {
             return ResponseEntity.status(200).body(validAccount);
         } else {
             return ResponseEntity.status(401).body("");
@@ -95,13 +97,13 @@ public class SocialMediaController {
     }
 
     @GetMapping("/messages/{messageId}")
-    public ResponseEntity getMessageById(@PathVariable long messageId) {
+    public ResponseEntity getMessageById(@PathVariable int messageId) {
         Message message = messageService.getMessage(messageId);
         return ResponseEntity.status(200).body(message);
     }
 
     @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity deleteMessageById(@PathVariable long messageId) {
+    public ResponseEntity deleteMessageById(@PathVariable int messageId) {
         boolean isExistingMessage = false;
         List<Message> messages = messageService.getAllMessages();
         for (int i = 0; i < messages.size(); i++) {
@@ -112,12 +114,14 @@ public class SocialMediaController {
         if (isExistingMessage) {
             messageService.deleteMessage(messageId);
             return ResponseEntity.status(200).body(1);
+        } else {
+            return ResponseEntity.status(200).body("");
         }
-        return ResponseEntity.status(200).body("");
     }
 
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity updateMessageById(@PathVariable long messageId, @RequestBody String newMessageText) {
+    public ResponseEntity updateMessageById(@PathVariable int messageId, @RequestBody Message message) {
+        String newMessageText = message.getMessageText();
         boolean isExistingMessage = false;
         List<Message> messages = messageService.getAllMessages();
         for (int i = 0; i < messages.size(); i++) {
@@ -128,13 +132,14 @@ public class SocialMediaController {
         if (isExistingMessage && !newMessageText.isBlank() && newMessageText.length() <= 255) {
             messageService.updateMessage(messageId, newMessageText);
             return ResponseEntity.status(200).body(1);
+        } else {
+            return ResponseEntity.status(400).body("");
         }
-        return ResponseEntity.status(400).body("");
     }
 
     @GetMapping("/accounts/{accountId}/messages")
-    public ResponseEntity updateMessageById(@PathVariable int accountId) {
+    public ResponseEntity getMessagesByUser(@PathVariable int accountId) {
         List<Message> userMessages = messageService.getUserMessages(accountId);
-        return ResponseEntity.status(400).body(userMessages);
+        return ResponseEntity.status(200).body(userMessages);
     }
 }
